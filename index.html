@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#122A22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="دليل الطلاب">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>دليل الطلاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#122A22; --ink-2:#1E4438; --ink-3:#295A49;
+    --paper:#FBF9F3; --paper-2:#F1ECDB;
+    --gold:#AD7C2A; --gold-light:#E3C077;
+    --line:#E7E0CA; --danger:#B3261E; --muted:#7C8179; --wa:#1F9D57;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', system-ui, sans-serif; -webkit-font-smoothing:antialiased; overscroll-behavior-y:none;}
+  .ornate{font-family:'Aref Ruqaa', serif; font-weight:700;}
+  button,input,select,textarea{font-family:inherit; font-size:16px;}
+  button{cursor:pointer;}
+  :focus-visible{outline:2px solid var(--gold-light); outline-offset:2px;}
+  .hidden{display:none !important;}
+
+  .hero-pattern{position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image:repeating-linear-gradient(45deg, rgba(227,192,119,.08) 0 1px, transparent 1px 22px),
+                     repeating-linear-gradient(-45deg, rgba(227,192,119,.06) 0 1px, transparent 1px 22px);}
+  .dark-screen{position:fixed; inset:0; z-index:100; overflow:auto;
+    background:radial-gradient(120% 90% at 50% -10%, var(--ink-3) 0%, var(--ink) 60%);
+    color:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:calc(env(safe-area-inset-top) + 24px) 22px calc(env(safe-area-inset-bottom) + 24px); text-align:center;}
+  .badge{width:66px; height:66px; border-radius:20px; background:rgba(255,255,255,.06);
+    border:1px solid rgba(227,192,119,.35); display:flex; align-items:center; justify-content:center; position:relative;}
+  .badge svg{width:32px; height:32px;}
+
+  /* Gate */
+  #gate{gap:14px;}
+  #gate h1{font-size:40px; margin:6px 0 0; color:var(--gold-light); line-height:1.3; position:relative;}
+  #gate p{margin:0 0 10px; opacity:.75; position:relative;}
+  #gate input{width:min(280px,100%); padding:14px; border-radius:14px; border:1px solid rgba(227,192,119,.35);
+    background:rgba(255,255,255,.07); color:#fff; text-align:center; font-size:20px; letter-spacing:6px; position:relative;}
+  #gate input::placeholder{letter-spacing:0; color:rgba(255,255,255,.5); font-size:16px;}
+  .gold-btn{width:min(280px,100%); padding:14px; border:0; border-radius:14px; background:var(--gold-light);
+    color:var(--ink); font-weight:700; font-size:17px; position:relative;}
+  .err{color:#F3B4AE; min-height:22px; font-size:14px; position:relative;}
+
+  /* School picker */
+  #picker{gap:10px; justify-content:flex-start; padding-top:calc(env(safe-area-inset-top) + 56px);}
+  #picker .kicker{opacity:.7; margin:14px 0 4px; position:relative;}
+  #picker h1{font-size:36px; margin:0 0 22px; color:var(--gold-light); position:relative;}
+  .school-list{width:min(440px,100%); display:flex; flex-direction:column; gap:14px; position:relative;}
+  .school-card{display:flex; align-items:center; gap:16px; text-align:right; width:100%;
+    padding:20px 18px; border-radius:22px; border:1px solid rgba(227,192,119,.28);
+    background:linear-gradient(160deg, rgba(255,255,255,.09), rgba(255,255,255,.03)); color:var(--paper);
+    transition:transform .15s ease, border-color .15s ease;}
+  .school-card:active{transform:scale(.98); border-color:var(--gold-light);}
+  .school-card .mono{flex:none; width:58px; height:58px; border-radius:16px; background:var(--gold-light); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; font-size:26px;}
+  .school-card .nm{font-size:23px; line-height:1.45; color:#fff;}
+  .school-card .meta{font-size:13px; opacity:.7; margin-top:2px;}
+  .school-card .chev{margin-inline-start:auto; opacity:.5; font-size:22px;}
+  .picker-status{position:relative; opacity:.75; font-size:14px; min-height:20px; margin-top:6px;}
+  .logout{position:relative; margin-top:26px; background:none; border:0; color:rgba(255,255,255,.55); font-size:14px; text-decoration:underline;}
+
+  /* App */
+  header.top{position:sticky; top:0; z-index:20; background:var(--ink); color:var(--paper); overflow:hidden;
+    padding:calc(env(safe-area-inset-top) + 14px) 18px 14px;}
+  header.top .row{display:flex; align-items:center; gap:12px; position:relative;}
+  .school-name{font-size:25px; margin:0; color:var(--gold-light); line-height:1.35;}
+  .app-sub{font-size:13px; opacity:.7;}
+  .switch-btn{margin-inline-start:auto; flex:none; border:1px solid rgba(227,192,119,.4); background:rgba(255,255,255,.06);
+    color:var(--gold-light); border-radius:12px; padding:8px 12px; font-size:14px; font-weight:600;}
+  .search-wrap{position:relative; margin-top:12px;}
+  .search-wrap input{width:100%; padding:13px 44px 13px 14px; border-radius:14px; border:0; background:#fff; color:var(--ink);}
+  .search-wrap svg{position:absolute; right:14px; top:50%; transform:translateY(-50%); width:20px; height:20px; stroke:var(--muted);}
+  .chips{display:flex; gap:8px; overflow-x:auto; padding:12px 18px 4px; scrollbar-width:none; position:sticky; z-index:15; background:var(--paper);}
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{flex:none; padding:8px 14px; border-radius:999px; border:1px solid var(--line); background:#fff; color:var(--ink); font-size:14px; font-weight:500;}
+  .chip.on{background:var(--ink); color:var(--gold-light); border-color:var(--ink);}
+  .status-line{padding:8px 18px 0; font-size:13px; color:var(--muted); display:flex; justify-content:space-between;}
+  main{padding:4px 14px calc(env(safe-area-inset-bottom) + 30px);}
+  .group-h{display:flex; align-items:baseline; gap:8px; margin:18px 6px 8px;}
+  .group-h h2{margin:0; font-size:17px; font-weight:700;}
+  .group-h span{font-size:13px; color:var(--muted);}
+  .card-list{background:#fff; border:1px solid var(--line); border-radius:18px; overflow:hidden;}
+  .stu{display:flex; align-items:center; gap:12px; width:100%; text-align:right; padding:12px 14px; border:0; background:none; color:var(--ink);
+    border-bottom:1px solid var(--line);}
+  .stu:last-child{border-bottom:0;}
+  .stu:active{background:var(--paper-2);}
+  .av{flex:none; width:40px; height:40px; border-radius:12px; background:var(--paper-2); color:var(--gold);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:17px;}
+  .stu .t{min-width:0; flex:1;}
+  .stu .n{font-weight:600; font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .stu .s{font-size:12.5px; color:var(--muted); margin-top:2px; direction:rtl;}
+  .flag{flex:none; font-size:11px; padding:3px 8px; border-radius:999px; background:#FBEBD2; color:#8A5A12; font-weight:600;}
+  .empty{text-align:center; color:var(--muted); padding:50px 20px;}
+
+  /* Detail sheet */
+  #detail{position:fixed; inset:0; z-index:50; background:rgba(18,42,34,.45); display:flex; align-items:flex-end;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;}
+  #detail.open{opacity:1; pointer-events:auto;}
+  .sheet{width:100%; max-width:640px; margin:0 auto; max-height:92vh; overflow:auto; background:var(--paper);
+    border-radius:26px 26px 0 0; transform:translateY(30px); transition:transform .25s ease;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 22px);}
+  #detail.open .sheet{transform:none;}
+  .sheet-head{position:relative; overflow:hidden; background:var(--ink); color:var(--paper); padding:16px 20px 22px; border-radius:26px 26px 0 0;}
+  .grab{width:44px; height:5px; border-radius:3px; background:rgba(255,255,255,.3); margin:0 auto 12px;}
+  .close{position:absolute; left:14px; top:14px; width:34px; height:34px; border-radius:50%; border:0; background:rgba(255,255,255,.1); color:#fff; font-size:20px;}
+  .sheet-head h2{margin:4px 0 4px; font-size:22px; line-height:1.4; position:relative;}
+  .sheet-head .sub{opacity:.75; font-size:14px; position:relative;}
+  .sheet-body{padding:16px;}
+  .phone-box{background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; text-align:center;}
+  .phone-box .lbl{font-size:13px; color:var(--muted);}
+  .phone-num{display:block; width:100%; border:0; background:none; color:var(--ink); font-size:28px; font-weight:700;
+    letter-spacing:1px; direction:ltr; margin:6px 0 2px;}
+  .phone-box .hint{font-size:12px; color:var(--muted);}
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+  .act{display:flex; align-items:center; justify-content:center; gap:8px; padding:13px; border-radius:14px; border:0; font-weight:700; font-size:15px; text-decoration:none;}
+  .act svg{width:19px; height:19px;}
+  .act.call{background:var(--ink); color:var(--gold-light);}
+  .act.wa{background:var(--wa); color:#fff;}
+  .act.disabled{opacity:.35; pointer-events:none;}
+  .info{margin-top:14px; background:#fff; border:1px solid var(--line); border-radius:18px;}
+  .info .r{display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line);}
+  .info .r:last-child{border-bottom:0;}
+  .info .k{flex:none; width:118px; color:var(--muted); font-size:14px;}
+  .info .v{font-weight:600; font-size:15px; white-space:pre-wrap; word-break:break-word;}
+  .info .v.none{color:#B9BDB3; font-weight:400;}
+  .edit-btn{width:100%; margin-top:14px; padding:13px; border-radius:14px; border:1px solid var(--ink); background:none; color:var(--ink); font-weight:700;}
+  .form label{display:block; font-size:13px; color:var(--muted); margin:12px 4px 5px;}
+  .form input,.form select,.form textarea{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:#fff; color:var(--ink);}
+  .form textarea{min-height:70px; resize:vertical;}
+  .form .two{display:grid; grid-template-columns:2fr 1fr; gap:10px;}
+  .form .btns{display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-top:18px;}
+  .save{padding:14px; border-radius:14px; border:0; background:var(--ink); color:var(--gold-light); font-weight:700;}
+  .cancel{padding:14px; border-radius:14px; border:1px solid var(--line); background:#fff; color:var(--ink); font-weight:600;}
+  .save:disabled{opacity:.5;}
+
+  #toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 26px); transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:var(--gold-light); padding:11px 18px; border-radius:14px; font-weight:600; font-size:14px;
+    opacity:0; pointer-events:none; transition:all .25s ease; z-index:200; white-space:nowrap;}
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .spin{display:inline-block; width:16px; height:16px; border:2px solid currentColor; border-top-color:transparent; border-radius:50%;
+    animation:sp .8s linear infinite; vertical-align:-3px;}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important;}}
+</style>
+</head>
+<body>
+
+<!-- بوابة الدخول -->
+<section id="gate" class="dark-screen hidden">
+  <div class="hero-pattern"></div>
+  <div class="badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#E3C077" stroke-width="2" stroke-linecap="round"><path d="M4 6h11M4 12h8M4 18h6"/><circle cx="20" cy="6" r="1.3" fill="#E3C077" stroke="none"/><circle cx="16" cy="12" r="1.3" fill="#E3C077" stroke="none"/><circle cx="14" cy="18" r="1.3" fill="#E3C077" stroke="none"/></svg>
+  </div>
+  <h1 class="ornate">دليل الطلاب</h1>
+  <p>أدخل كلمة المرور للمتابعة</p>
+  <input id="gate-pass" type="password" inputmode="numeric" autocomplete="current-password" placeholder="كلمة المرور">
+  <button id="gate-btn" class="gold-btn">دخول</button>
+  <div class="err" id="gate-err"></div>
+</section>
+
+<!-- اختيار المدرسة -->
+<section id="picker" class="dark-screen hidden">
+  <div class="hero-pattern"></div>
+  <div class="badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#E3C077" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg>
+  </div>
+  <div class="kicker">دليل الطلاب</div>
+  <h1 class="ornate">اختر المدرسة</h1>
+  <div class="school-list" id="school-list"></div>
+  <div class="picker-status" id="picker-status"></div>
+  <button class="logout" id="logout-btn">تسجيل الخروج</button>
+</section>
+
+<!-- التطبيق -->
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="hero-pattern"></div>
+    <div class="row">
+      <div style="min-width:0">
+        <h1 class="school-name ornate" id="school-title"></h1>
+        <div class="app-sub" id="school-sub"></div>
+      </div>
+      <button class="switch-btn" id="switch-btn">تغيير المدرسة</button>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="ابحث بالاسم أو رقم الطالب أو الجوال" autocomplete="off">
+    </div>
+  </header>
+  <div class="chips" id="chips"></div>
+  <div class="status-line"><span id="result-count"></span><span id="sync-state"></span></div>
+  <main id="list"></main>
+</div>
+
+<!-- تفاصيل الطالب -->
+<div id="detail" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head">
+      <div class="hero-pattern"></div>
+      <div class="grab"></div>
+      <button class="close" id="close-detail" aria-label="إغلاق">×</button>
+      <h2 id="d-name"></h2>
+      <div class="sub" id="d-sub"></div>
+    </div>
+    <div class="sheet-body" id="d-view">
+      <div class="phone-box">
+        <div class="lbl">جوال ولي الأمر</div>
+        <button class="phone-num" id="d-phone"></button>
+        <div class="hint" id="d-phone-hint">اضغط على الرقم لنسخه</div>
+      </div>
+      <div class="actions">
+        <a class="act call" id="d-call" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+          اتصال
+        </a>
+        <a class="act wa" id="d-wa" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3a.4.4 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>
+          واتساب
+        </a>
+      </div>
+      <div class="info" id="d-info"></div>
+      <button class="edit-btn" id="d-edit">تعديل البيانات</button>
+    </div>
+    <form class="sheet-body form hidden" id="d-form">
+      <label for="f-name">اسم الطالب</label>
+      <input id="f-name" required>
+      <div class="two">
+        <div><label for="f-grade">الصف</label><select id="f-grade"></select></div>
+        <div><label for="f-section">الفصل</label><input id="f-section" inputmode="numeric"></div>
+      </div>
+      <label for="f-phone">جوال ولي الأمر</label>
+      <input id="f-phone" inputmode="tel" dir="ltr" placeholder="05xxxxxxxx">
+      <label for="f-health">الحالة الصحية</label>
+      <textarea id="f-health" placeholder="اتركه فارغًا إن لم توجد"></textarea>
+      <label for="f-social">الحالة الاجتماعية</label>
+      <textarea id="f-social" placeholder="اتركه فارغًا إن لم توجد"></textarea>
+      <label for="f-notes">ملاحظات</label>
+      <textarea id="f-notes"></textarea>
+      <div class="btns">
+        <button type="submit" class="save" id="f-save">حفظ التعديلات</button>
+        <button type="button" class="cancel" id="f-cancel">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============ الإعدادات ============ */
+// الصق هنا رابط تطبيق الويب من Google Apps Script (ينتهي بـ /exec)
+const API_URL = 'https://script.google.com/macros/s/AKfycbw94-BCGuxX7oXZxS53MMBv4QTXdEC9DONMMVQ26BPfK8Hvlqx8cYMjY4nthExGSnqx4Q/exec';
+const PASSWORD = '2030';
+/* ================================== */
+
+const GRADES = ['الأول ابتدائي','الثاني ابتدائي','الثالث ابتدائي','الرابع ابتدائي','الخامس ابتدائي','السادس ابتدائي',
+                'الأول متوسط','الثاني متوسط','الثالث متوسط','الأول ثانوي','الثاني ثانوي','الثالث ثانوي'];
+const LS = {
+  get(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(_){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(_){} }
+};
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; };
+
+let schools = [];
+let school = null;
+let students = [];
+let gradeFilter = 'الكل';
+let current = null;
+
+/* ---------- أدوات ---------- */
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2000); }
+function norm(s){
+  return String(s||'').replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/\s+/g,' ').trim().toLowerCase();
+}
+function localPhone(p){ // 9665xxxxxxxx -> 05xxxxxxxx
+  let d=String(p||'').replace(/\D/g,'');
+  if(!d) return '';
+  if(d.startsWith('00966')) d=d.slice(5); else if(d.startsWith('966')) d=d.slice(3);
+  if(d.startsWith('5') && d.length===9) d='0'+d;
+  return d;
+}
+function intlPhone(p){ let d=localPhone(p); if(d.startsWith('0')) d=d.slice(1); return d ? '966'+d : ''; }
+function gradeIndex(g){ const i=GRADES.indexOf(g); return i<0?99:i; }
+function sortStudents(a){
+  return a.sort((x,y)=> gradeIndex(x.grade)-gradeIndex(y.grade) || (Number(x.section)||0)-(Number(y.section)||0) || x.name.localeCompare(y.name,'ar'));
+}
+function apiConfigured(){ return API_URL && API_URL.startsWith('https://'); }
+async function apiGet(params){
+  const u=new URL(API_URL);
+  Object.entries({...params, key:PASSWORD}).forEach(([k,v])=>u.searchParams.set(k,v));
+  const r=await fetch(u.toString(),{cache:'no-store'});
+  const j=await r.json();
+  if(!j.ok) throw new Error(j.error||'خطأ');
+  return j;
+}
+async function apiPost(body){
+  const r=await fetch(API_URL,{method:'POST', body:JSON.stringify({...body, key:PASSWORD})});
+  const j=await r.json();
+  if(!j.ok) throw new Error(j.error||'خطأ');
+  return j;
+}
+function show(id){ ['gate','picker','app'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); window.scrollTo(0,0); }
+
+/* ---------- الدخول ---------- */
+function tryLogin(){
+  if($('gate-pass').value.trim()===PASSWORD){ LS.set('dir_auth','1'); openPicker(); }
+  else { $('gate-err').textContent='كلمة المرور غير صحيحة'; $('gate-pass').select(); }
+}
+$('gate-btn').onclick=tryLogin;
+$('gate-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') tryLogin(); });
+$('logout-btn').onclick=()=>{ LS.del('dir_auth'); $('gate-pass').value=''; $('gate-err').textContent=''; show('gate'); };
+
+/* ---------- اختيار المدرسة ---------- */
+function renderSchools(){
+  const box=$('school-list'); box.replaceChildren();
+  schools.forEach(s=>{
+    const b=el('button','school-card');
+    const mono=el('div','mono ornate', s.name.trim().replace(/^ال/,'').charAt(0));
+    const t=el('div'); t.style.minWidth='0';
+    t.append(el('div','nm ornate', s.name), el('div','meta', s.count ? s.count+' طالبًا' : ''));
+    b.append(mono, t, el('div','chev','‹'));
+    b.onclick=()=>openSchool(s.name);
+    box.append(b);
+  });
+}
+async function openPicker(){
+  show('picker');
+  const cached=LS.get('dir_schools');
+  if(cached){ try{ schools=JSON.parse(cached); renderSchools(); }catch(_){} }
+  if(!apiConfigured()){ $('picker-status').textContent='لم يُضبط رابط قاعدة البيانات بعد (API_URL)'; return; }
+  $('picker-status').replaceChildren(el('span','spin'));
+  try{
+    const j=await apiGet({action:'schools'});
+    schools=j.schools; LS.set('dir_schools',JSON.stringify(schools)); renderSchools();
+    $('picker-status').textContent = schools.length ? '' : 'لا توجد مدارس في ملف Google Sheets';
+  }catch(e){
+    $('picker-status').textContent = schools.length ? 'تعذّر التحديث — تُعرض آخر نسخة محفوظة' : 'تعذّر الاتصال بقاعدة البيانات. تحقق من الإنترنت ثم أعد المحاولة.';
+  }
+}
+$('switch-btn').onclick=openPicker;
+
+/* ---------- قائمة الطلاب ---------- */
+async function openSchool(name){
+  school=name; gradeFilter='الكل'; $('q').value='';
+  $('school-title').textContent=name;
+  $('school-sub').textContent='دليل الطلاب';
+  document.title='دليل الطلاب — '+name;
+  show('app');
+  const cached=LS.get('dir_students_'+name);
+  students = cached ? JSON.parse(cached) : [];
+  render();
+  await refresh();
+}
+async function refresh(){
+  const name=school;
+  $('sync-state').replaceChildren(el('span','spin'));
+  try{
+    const j=await apiGet({action:'students', school:name});
+    if(name!==school) return;
+    students=sortStudents(j.students);
+    LS.set('dir_students_'+name, JSON.stringify(students));
+    $('sync-state').textContent='محدّث';
+    render();
+  }catch(e){
+    $('sync-state').textContent = students.length ? 'غير متصل — نسخة محفوظة' : 'تعذّر التحميل';
+    if(!students.length) render();
+  }
+}
+function render(){
+  // الشرائح
+  const grades=[...new Set(students.map(s=>s.grade).filter(Boolean))].sort((a,b)=>gradeIndex(a)-gradeIndex(b));
+  const chips=$('chips'); chips.replaceChildren();
+  ['الكل',...grades].forEach(g=>{
+    const c=el('button','chip'+(g===gradeFilter?' on':''), g);
+    c.onclick=()=>{ gradeFilter=g; render(); };
+    chips.append(c);
+  });
+  chips.style.top=document.querySelector('header.top').offsetHeight+'px';
+
+  const q=norm($('q').value);
+  const qd=$('q').value.replace(/\D/g,'');
+  let list=students.filter(s=> gradeFilter==='الكل' || s.grade===gradeFilter);
+  if(q){
+    list=list.filter(s=> norm(s.name).includes(q) || (qd && (s.id.includes(qd) || localPhone(s.phone).includes(qd.replace(/^966/,'0')) || s.phone.includes(qd))));
+  }
+  $('result-count').textContent = list.length+' طالبًا';
+
+  const main=$('list'); main.replaceChildren();
+  if(!list.length){
+    main.append(el('div','empty', students.length ? 'لا توجد نتائج مطابقة للبحث' : 'جارٍ تحميل بيانات الطلاب…'));
+    return;
+  }
+  const groups=new Map();
+  list.forEach(s=>{ const k=s.grade+'|'+s.section; if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(s); });
+  groups.forEach((arr,k)=>{
+    const [g,sec]=k.split('|');
+    const h=el('div','group-h'); h.append(el('h2',null, g+(sec?' / '+sec:'')), el('span',null, arr.length+' طالبًا'));
+    const box=el('div','card-list');
+    arr.forEach(s=>{
+      const b=el('button','stu');
+      const t=el('div','t');
+      t.append(el('div','n',s.name), el('div','s', s.id + (s.phone ? '  ·  '+localPhone(s.phone) : '  ·  بلا جوال')));
+      b.append(el('div','av', s.name.trim().charAt(0)), t);
+      if(s.health || s.social) b.append(el('span','flag','حالة'));
+      b.onclick=()=>openDetail(s);
+      box.append(b);
+    });
+    main.append(h, box);
+  });
+}
+let qTimer; $('q').addEventListener('input',()=>{ clearTimeout(qTimer); qTimer=setTimeout(render,120); });
+
+/* ---------- تفاصيل الطالب ---------- */
+function openDetail(s){
+  current=s;
+  $('d-view').classList.remove('hidden'); $('d-form').classList.add('hidden');
+  fillDetail();
+  $('detail').classList.add('open'); $('detail').setAttribute('aria-hidden','false');
+}
+function fillDetail(){
+  const s=current;
+  $('d-name').textContent=s.name;
+  $('d-sub').textContent=[s.grade, s.section?('فصل '+s.section):''].filter(Boolean).join(' / ');
+  const lp=localPhone(s.phone);
+  $('d-phone').textContent = lp || '—';
+  $('d-phone-hint').textContent = lp ? 'اضغط على الرقم لنسخه' : 'لا يوجد رقم مسجّل';
+  $('d-call').href = lp ? 'tel:'+lp : '#';
+  $('d-wa').href = lp ? 'https://wa.me/'+intlPhone(s.phone) : '#';
+  $('d-call').classList.toggle('disabled',!lp); $('d-wa').classList.toggle('disabled',!lp);
+  const info=$('d-info'); info.replaceChildren();
+  [['رقم الطالب',s.id],['المدرسة',school],['الحالة الصحية',s.health],['الحالة الاجتماعية',s.social],['ملاحظات',s.notes]].forEach(([k,v])=>{
+    const r=el('div','r'); r.append(el('div','k',k), el('div','v'+(v?'':' none'), v||'لا يوجد')); info.append(r);
+  });
+}
+function closeDetail(){ $('detail').classList.remove('open'); $('detail').setAttribute('aria-hidden','true'); current=null; }
+$('close-detail').onclick=closeDetail;
+$('detail').addEventListener('click',e=>{ if(e.target.id==='detail') closeDetail(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && current) closeDetail(); });
+$('d-phone').onclick=async()=>{
+  const lp=localPhone(current && current.phone); if(!lp) return;
+  try{ await navigator.clipboard.writeText(lp); toast('تم نسخ الرقم'); }
+  catch(_){ const ta=el('textarea'); ta.value=lp; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('تم نسخ الرقم'); }
+};
+
+/* ---------- التعديل ---------- */
+$('d-edit').onclick=()=>{
+  const s=current, sel=$('f-grade'); sel.replaceChildren();
+  const opts=[...new Set([...GRADES.filter(g=>students.some(x=>x.grade===g)), s.grade].filter(Boolean))];
+  (opts.length?opts:GRADES).forEach(g=>{ const o=el('option',null,g); o.value=g; sel.append(o); });
+  sel.value=s.grade;
+  $('f-name').value=s.name; $('f-section').value=s.section; $('f-phone').value=localPhone(s.phone);
+  $('f-health').value=s.health; $('f-social').value=s.social; $('f-notes').value=s.notes;
+  $('d-view').classList.add('hidden'); $('d-form').classList.remove('hidden');
+};
+$('f-cancel').onclick=()=>{ $('d-form').classList.add('hidden'); $('d-view').classList.remove('hidden'); };
+$('d-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const ph=$('f-phone').value.replace(/\D/g,'');
+  if(ph && !/^(05\d{8}|9665\d{8}|5\d{8})$/.test(ph)){ toast('رقم الجوال غير صحيح'); return; }
+  const upd={...current,
+    name:$('f-name').value.trim(), grade:$('f-grade').value, section:$('f-section').value.trim(),
+    phone: ph ? intlPhone(ph) : '', health:$('f-health').value.trim(), social:$('f-social').value.trim(), notes:$('f-notes').value.trim()};
+  if(!upd.name){ toast('اسم الطالب مطلوب'); return; }
+  const btn=$('f-save'); btn.disabled=true; btn.replaceChildren(el('span','spin'));
+  try{
+    const j=await apiPost({action:'update', school, student:upd});
+    const i=students.findIndex(x=>x.id===upd.id);
+    if(i>=0) students[i]=j.student;
+    sortStudents(students); LS.set('dir_students_'+school, JSON.stringify(students));
+    current=j.student; fillDetail(); render();
+    $('d-form').classList.add('hidden'); $('d-view').classList.remove('hidden');
+    toast('تم حفظ التعديلات');
+  }catch(err){
+    toast('تعذّر الحفظ — تحقق من الاتصال');
+  }finally{
+    btn.disabled=false; btn.textContent='حفظ التعديلات';
+  }
+});
+
+/* ---------- البدء ---------- */
+if(LS.get('dir_auth')==='1') openPicker(); else show('gate');
+if('serviceWorker' in navigator && location.protocol==='https:'){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+</body>
+</html>
